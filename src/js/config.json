@@ -1,0 +1,9 @@
+{
+  "server": {
+    "port": 8080
+  },
+  "db": {
+    "uri": "mysql://root:@localhost:3306/mydb",
+    "password": "12345678"
+  }
+}

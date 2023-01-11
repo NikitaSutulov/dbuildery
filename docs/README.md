@@ -6,6 +6,9 @@ actionLink: /intro/
 footer: "ECL 2.0 Licensed | Copyright © [2022] [Світлана БАРИЦЬКА Марія Гайдей Людмила ГОРБУНОВА Сергій КОЛОСОВ Вікторія МИЦЬ Нікіта СУТУЛОВ]"
 ---
 
+**Закінчив як курсову роботу:**
+
+<span padding-right:5em></span> **Нікіта СУТУЛОВ [Telegram](https://t.me/Nikita_Sutulov), [GitHub](https://github.com/NikitaSutulov), Email notsid212@gmail.com**
 
 **Виконали:** 
 
