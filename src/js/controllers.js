@@ -1,9 +1,5 @@
-const mysql = require('mysql2/promise');
-const {extend} = require("lodash")
-const fs = require("fs");
-const path = require("path");
-
-const config = JSON.parse(fs.readFileSync(path.resolve('src/js/config.json')).toString())
+const {extend} = require('lodash');
+const getConnection = require('./db');
 
 
 /**
@@ -48,6 +44,14 @@ const getUpdateValues = async (req) => {
     return values;
 };
 
+const validateEmail = (req) => {
+    return String(req.body.email)
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+};
+
 
 /**
  * Повертає результат виконання SQL-запиту
@@ -61,11 +65,7 @@ const executeSQL = async (query, values) => {
     let connection
     let sqlStatement
     try {
-        connection = await mysql.createConnection({
-            uri: config.db.uri,
-            namedPlaceholders: true,
-            password: config.db.password
-        });
+        connection = await getConnection()
 
         sqlStatement = connection.format(query, values)
 
@@ -85,6 +85,12 @@ const executeSQL = async (query, values) => {
 const createUser = async (req, res) => {
     if (!validateParams(['login', 'password', 'email'], req.body)) {
         return sendMissing(res);
+    }
+    if (!validateEmail(req)) {
+        return res.status(500).send({
+            status: 500,
+            error: `${req.params.email} is not an email!`
+        });
     }
     try {
         const values = extend({}, req.body, req.params)
@@ -108,7 +114,6 @@ const createUser = async (req, res) => {
  * Повертає список користувачів
  */
 const readUsersList = async (req, res) => {
-
     try {
         let result = await executeSQL(queries.readUsersList)
         res.status(200).send(result);
@@ -151,6 +156,14 @@ const updateUserById = async (req, res) => {
             return sendMissing(res);
         } else {
             return sendNotFound(res);
+        }
+    }
+    if (req.body.email !== undefined) {
+        if (!validateEmail(req)) {
+            return res.status(500).send({
+                status: 500,
+                error: `Error: ${req.body.email} is not an email!`
+            });
         }
     }
     try {
