@@ -76,7 +76,7 @@ const executeSQL = async (query, values) => {
     } finally {
         if(connection) connection.end()
     }
-}
+};
 
 
 /**
@@ -107,7 +107,7 @@ const createUser = async (req, res) => {
             error: `${err.toString()}`
         });
     }
-}
+};
 
 
 /**
@@ -123,7 +123,7 @@ const readUsersList = async (req, res) => {
             error: `${err.toString()}`
         });
     }
-}
+};
 
 
 /**
@@ -135,14 +135,18 @@ const readUserById = async (req, res) => {
     }
     try {
         let result = await executeSQL(queries.readUserById, req.params)
-        res.status(200).send(result);
+        if (result.length > 0) {
+            res.status(200).send(result);
+        } else {
+            sendNotFound(res)
+        }
     } catch (err) {
         return res.status(500).send({
             status: 500,
             error: `${err.toString()}`
         });
     }
-}
+};
 
 
 /**
@@ -169,7 +173,11 @@ const updateUserById = async (req, res) => {
     try {
         let result = await executeSQL(queries.updateUserById, values)
         result = await executeSQL(queries.readUserById, req.params)
-        res.status(200).send(result);
+        if (result.length > 0) {
+            res.status(200).send(result);
+        } else {
+            sendNotFound(res);
+        }
     } catch (err) {
         console.log(req.body);
         console.log(err.toString());
@@ -178,7 +186,7 @@ const updateUserById = async (req, res) => {
             error: `${err.toString()}`
         });
     }
-}
+};
 
 
 /**
@@ -191,13 +199,17 @@ const deleteUserById = async (req, res) => {
     try {
         let result = await executeSQL(queries.readUserById, req.params)
         await executeSQL(queries.deleteUserById, req.params)
-        res.status(200).send(result);
+        if (result.length > 0) {
+            res.status(200).send(result);
+        } else {
+            sendNotFound(res)
+        }
     } catch (err) {
         return res.status(500).send({
             status: 500,
             error: `${err.toString()}`
         });
     }
-}
+};
 
-module.exports = { createUser, readUsersList, readUserById, updateUserById, deleteUserById }
+module.exports = { createUser, readUsersList, readUserById, updateUserById, deleteUserById };
